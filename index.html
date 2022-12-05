@@ -3,13 +3,51 @@
 
 <head>
     <meta charset="utf-8">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <title></title>
     <style>
-    </style>
+    </style> 
 </head>
 
 <body>
+    <div id="map"></div>
     <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYWxleGFrMjQiLCJhIjoiY2xhYWxpdmd5MDg0bTNvcno5cmx0bDRubyJ9.tmDENHgj1qkGU9LYgnLOTg';
+
+        let map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            zoom: 6.2,
+            center: [-121.5, 47.5]
+        });
+
+        async function geojsonFetch() {
+            let response = await fetch('assets/Washington_Library_Locations.geojson');
+            let libraryData = await response.json();
+
+            map.on('load', function loadingData() {
+
+                map.addSource('libraryData', {
+                    type: 'geojson',
+                    data: libraryData
+                });
+
+                map.addLayer({
+                    'id': 'libraryData-layer',
+                    'type': 'circle',
+                    'source': 'libraryData',
+                    'paint': {
+                        'circle-radius': 2,
+                        'circle-stroke-width': 1,
+                        'circle-color': 'blue',
+                        'circle-stroke-color': 'white'
+                    }
+                });
+            });
+        }
+
+        geojsonFetch();
     </script>
 
 </body>
