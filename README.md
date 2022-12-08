@@ -1,1 +1,1 @@
-# geog495_libraryfinder
+# Library Finder
