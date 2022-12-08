@@ -22,11 +22,11 @@ rel="stylesheet"/>
         padding: 0;
         -webkit-font-smoothing: antialiased;
     }
-    
+
     * {
         box-sizing: border-box;
     }
-    
+
     .sidebar {
         position: absolute;
         width: 33.3333%;
@@ -39,7 +39,7 @@ rel="stylesheet"/>
     .pad2 {
         padding: 20px;
     }
-    
+
     .map {
         position: absolute;
         left: 33.3333%;
@@ -47,7 +47,7 @@ rel="stylesheet"/>
         top: 0;
         bottom: 0;
     }
-    
+
     h1 {
         font-size: 22px;
         margin: 0;
@@ -55,16 +55,16 @@ rel="stylesheet"/>
         line-height: 20px;
         padding: 20px 2px;
     }
-    
+
     a {
         color: #404040;
         text-decoration: none;
     }
-    
+
     a:hover {
         color: #101010;
     }
-    
+
     .heading {
         background: #fff;
         border-bottom: 1px solid #eee;
@@ -74,19 +74,19 @@ rel="stylesheet"/>
         background-color: #00853e;
         color: #fff;
     }
-    
+
     .listings {
         height: 100%;
         overflow: auto;
         padding-bottom: 60px;
     }
-    
+
     .listings .item {
         border-bottom: 1px solid #eee;
         padding: 10px;
         text-decoration: none;
     }
-    
+
     .listings .item:last-child {
         border-bottom: none;
     }
@@ -96,7 +96,7 @@ rel="stylesheet"/>
         color: #00853e;
         font-weight: 700;
     }
-    
+
     .listings .item .title small {
         font-weight: 400;
     }
@@ -120,7 +120,7 @@ rel="stylesheet"/>
         background: #00853e;
         border-radius: 0;
     }
-    
+
     .marker {
         border: none;
         cursor: pointer;
@@ -128,12 +128,12 @@ rel="stylesheet"/>
         width: 56px;
         background-image: url(marker.png);
     }
-    
+
     /* Marker tweaks */
     .mapboxgl-popup {
         padding-bottom: 50px;
     }
-    
+
     .mapboxgl-popup-close-button {
         display: none;
     }
@@ -143,7 +143,7 @@ rel="stylesheet"/>
         padding: 0;
         width: 180px;
     }
-    
+
     .mapboxgl-popup-content h3 {
         background: #91c949;
         color: #fff;
@@ -152,25 +152,25 @@ rel="stylesheet"/>
         border-radius: 3px 3px 0 0;
         font-weight: 700;
     }
-    
+
     .mapboxgl-popup-content h4 {
         margin: 0;
         padding: 10px;
         font-weight: 400;
     }
-    
+
     .mapboxgl-popup-content div {
         padding: 10px;
     }
-    
+
     .mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
         margin-top: 15px;
     }
-    
+
     .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
         border-bottom-color: #91c949;
     }
-    
+
     .mapboxgl-ctrl-geocoder {
         border-radius: 0;
         position: relative;
@@ -179,7 +179,7 @@ rel="stylesheet"/>
         margin-top: 0;
         border: 0;
     }
-    
+
     .mapboxgl-ctrl-geocoder > div {
         min-width: 100%;
         margin-left: 0;
@@ -196,22 +196,22 @@ rel="stylesheet"/>
     <div id="map" class="map"></div>
     <script>
         mapboxgl.accessToken = '';
- 
+
     /**
     * Add the map to the page
     */
     const map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
+        style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc',
         center: [-77.034084142948, 38.909671288923],
         zoom: 13,
         scrollZoom: false
     });
- 
+
     const stores = {
         // Load data
     }
- 
+
     /**
     * Assign a unique id to each store. You'll use this `id`
     * later to associate each point on the map with a listing
@@ -220,7 +220,7 @@ rel="stylesheet"/>
     stores.features.forEach((store, i) => {
         store.properties.id = i;
     });
- 
+
     /**
     * Wait until the map loads to make changes to the map.
     */
@@ -233,17 +233,17 @@ rel="stylesheet"/>
             'type': 'geojson',
             'data': stores
         });
- 
+
         /**
         * Create a new MapboxGeocoder instance.
         */
         const geocoder = new MapboxGeocoder({
-            accessToken: mapboxgl.accessToken,
+            accessToken: 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA',
             mapboxgl: mapboxgl,
             marker: true,
             bbox: [-77.210763, 38.803367, -76.853675, 39.052643]
         });
- 
+
         /**
         * Add all the things to the page:
         * - The location listings on the side of the page
@@ -253,7 +253,7 @@ rel="stylesheet"/>
         buildLocationList(stores);
         map.addControl(geocoder, 'top-left');
         addMarkers();
- 
+
         /**
         * Listen for when a geocoder result is returned. When one is returned:
         * - Calculate distances
@@ -266,7 +266,7 @@ rel="stylesheet"/>
         geocoder.on('result', (event) => {
             /* Get the coordinate of the search result */
             const searchResult = event.result.geometry;
-    
+
             /**
             * Calculate distances:
             * For each store, use turf.disance to calculate the distance
@@ -281,7 +281,7 @@ rel="stylesheet"/>
                     options
                 );
             }
-    
+
             /**
             * Sort stores by distance from closest to the `searchResult`
             * to furthest.
@@ -295,7 +295,7 @@ rel="stylesheet"/>
                 }
                 return 0; // a must be equal to b
             });
-    
+
             /**
             * Rebuild the listings:
             * Remove the existing listings and build the location
@@ -306,16 +306,16 @@ rel="stylesheet"/>
                 listings.removeChild(listings.firstChild);
             }
             buildLocationList(stores);
-    
+
             /* Open a popup for the closest store. */
             createPopUp(stores.features[0]);
-    
+
             /** Highlight the listing for the closest store. */
             const activeListing = document.getElementById(
                 `listing-${stores.features[0].properties.id}`
             );
             activeListing.classList.add('active');
-    
+
             /**
             * Adjust the map camera:
             * Get a bbox that contains both the geocoder result and
@@ -327,7 +327,7 @@ rel="stylesheet"/>
             });
         });
     });
- 
+
     /**
     * Using the coordinates (lng, lat) for
     * (1) the search result and
@@ -366,7 +366,7 @@ rel="stylesheet"/>
             [sortedLons[1], sortedLats[1]]
         ];
     }
-    
+
     /**
     * Add a marker to the map for every store listing.
     **/
@@ -379,7 +379,7 @@ rel="stylesheet"/>
             el.id = `marker-${marker.properties.id}`;
             /* Assign the `marker` class to each marker for styling. */
             el.className = 'marker';
-            
+
             /**
             * Create a marker using the div element
             * defined above and add it to the map.
@@ -387,7 +387,7 @@ rel="stylesheet"/>
             new mapboxgl.Marker(el, { offset: [0, -23] })
                 .setLngLat(marker.geometry.coordinates)
                 .addTo(map);
-            
+
             /**
             * Listen to the element and when it is clicked, do three things:
             * 1. Fly to the point
@@ -409,7 +409,7 @@ rel="stylesheet"/>
             });
         }
     }
-    
+
     /**
     * Add a listing for each store to the sidebar.
     **/
@@ -422,14 +422,14 @@ rel="stylesheet"/>
             listing.id = `listing-${store.properties.id}`;
             /* Assign the `item` class to each listing for styling. */
             listing.className = 'item';
-            
+
             /* Add the link to the individual listing created above. */
             const link = listing.appendChild(document.createElement('a'));
             link.href = '#';
             link.className = 'title';
             link.id = `link-${store.properties.id}`;
             link.innerHTML = `${store.properties.address}`;
-        
+
             /* Add details to the individual listing. */
             const details = listing.appendChild(document.createElement('div'));
             details.innerHTML = `${store.properties.city}`;
@@ -441,7 +441,7 @@ rel="stylesheet"/>
                 Math.round(store.properties.distance * 100) / 100;
                 details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
             }
-        
+
             /**
             * Listen to the element and when it is clicked, do four things:
             * 1. Update the `currentFeature` to the store associated with the clicked link
@@ -464,7 +464,7 @@ rel="stylesheet"/>
             });
         }
     }
-    
+
     /**
     * Use Mapbox GL JS's `flyTo` to move the camera smoothly
     * a given center point.
@@ -475,14 +475,14 @@ rel="stylesheet"/>
             zoom: 15
         });
     }
-    
+
     /**
     * Create a Mapbox GL JS `Popup`.
     **/
     function createPopUp(currentFeature) {
         const popUps = document.getElementsByClassName('mapboxgl-popup');
         if (popUps[0]) popUps[0].remove();
-        
+
         const popup = new mapboxgl.Popup({ closeOnClick: false })
         .setLngLat(currentFeature.geometry.coordinates)
         .setHTML(
