@@ -9,7 +9,7 @@
 <body>
     <div class='sidebar'>
         <div class='heading'>
-          <h1>Libraries</h1>
+          <h1>Libraries in Washington State</h1>
         </div>
         <div id='listings' class='listings'></div>
       </div>
@@ -17,7 +17,7 @@
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
 
-        let map = new mapboxgl.Map({
+        const map = new mapboxgl.Map({
             container: 'map', // container ID
             style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
             zoom: 6.5, // starting zoom
@@ -84,7 +84,7 @@
 
             const popup = new mapboxgl.Popup({closeOnClick: false})
                 .setLngLat(currentFeature.geometry.coordinates)
-                .setHTML(`<h3>Name</h3><h4>${currentFeature.properties.Library}</h4>`)
+                .setHTML(`<h3>${currentFeature.properties.Library}</h3><h4>Other Info</h4>`)
                 .addTo(map);
         }
 
@@ -104,18 +104,19 @@
                     type: 'geojson',
                     data: libraries
                 });
+                addMarkers();
 
-                map.addLayer({
-                    'id': 'library-layer',
-                    'type': 'circle',
-                    'source': 'libraries',
-                    'paint': {
-                        'circle-radius': 8,
-                        'circle-stroke-width': 2,
-                        'circle-color': 'red',
-                        'circle-stroke-color': 'white'
-                    }
-                });
+                // map.addLayer({
+                //     'id': 'library-layer',
+                //     'type': 'circle',
+                //     'source': 'libraries',
+                //     'paint': {
+                //         'circle-radius': 8,
+                //         'circle-stroke-width': 2,
+                //         'circle-color': 'red',
+                //         'circle-stroke-color': 'white'
+                //     }
+                // });
             });
             // map.on('click', (event) => {
             //     /* Determine if a feature in the "locations" layer exists at that point. */
@@ -145,6 +146,50 @@
             //     listing.classList.add('active');
             // });
             buildLocationList(libraries);
+
+            function addMarkers() {
+                /* For each feature in the GeoJSON object above: */
+                for (const marker of libraries.features) {
+                    /* Create a div element for the marker. */
+                    const el = document.createElement('div');
+                    /* Assign a unique `id` to the marker. */
+                    el.id = `marker-${marker.properties.id}`;
+                    /* Assign the `marker` class to each marker for styling. */
+                    el.className = 'markerS';
+                    if (marker.properties.LDTC_TypeDescription === 'Academic Libraries') {
+                        el.className = 'markerA';
+                    }
+                    if (marker.properties.LDTC_TypeDescription === 'Government Libraries') {
+                        el.className = 'markerG';
+                    }
+                    if (marker.properties.LDTC_TypeDescription === 'Public Libraries') {
+                        el.className = 'markerP';
+                    }
+
+                    /**
+                     * Create a marker using the div element
+                     * defined above and add it to the map.
+                     **/
+                    new mapboxgl.Marker(el, {offset: [0, -23]})
+                        .setLngLat(marker.geometry.coordinates)
+                        .addTo(map);
+                    
+                    el.addEventListener('click', (e) => {
+                        /* Fly to the point */
+                        flyToStore(marker);
+                        /* Close all other popups and display popup for clicked store */
+                        createPopUp(marker);
+                        /* Highlight listing in sidebar */
+                        const activeItem = document.getElementsByClassName('active');
+                        e.stopPropagation();
+                        if (activeItem[0]) {
+                            activeItem[0].classList.remove('active');
+                        }
+                        const listing = document.getElementById(`listing-${marker.properties.id}`);
+                        listing.classList.add('active');
+                    });
+                }
+            }
         };
         geojsonFetch();
     </script>

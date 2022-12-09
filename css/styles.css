@@ -144,3 +144,39 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
     border-bottom-color: #91c949;
 }
+
+.markerA {
+    border-color: black;
+    cursor: pointer;
+    height: 56px;
+    width: 56px;
+    background-image: url(../img/academic.png);
+}
+
+.markerG {
+    border: none;
+    cursor: pointer;
+    height: 56px;
+    width: 56px;
+    background-image: url(../img/government.png);
+}
+
+.markerP {
+    border: none;
+    cursor: pointer;
+    height: 56px;
+    width: 56px;
+    background-image: url(../img/public.png);
+}
+
+.markerS {
+    border: none;
+    cursor: pointer;
+    height: 56px;
+    width: 56px;
+    background-image: url(../img/special.png);
+}
+
+.mapboxgl-popup {
+    padding-bottom: 50px;
+  }
