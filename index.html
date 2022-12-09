@@ -71,7 +71,7 @@
             </table>
 
         </div>
-        <div id="map"></div>
+    <div id="map"></div>
     </main>
     <script>
       mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
@@ -85,40 +85,40 @@
 
       async function geojsonFetch() {
         let response, schools, seattle, table;
-        response = await fetch('assests\\Public_Schools.geojson');
-        schools = await response.json();
-        response = await fetch('assests\\seattle.geojson');
-        seattle = await response.json();
+        response = await fetch('assets/Washington_Library_Locations.geojson');
+        libraries = await response.json();
+        // response = await fetch('assets/seattle.geojson');
+        // seattle = await response.json();
 
         //load data to the map as new layers and table on the side.
         map.on('load', function loadingData() {
           geojsonFetch();
 
-          map.addSource('seattle', {
-              type: 'geojson',
-              data: seattle
-          });
+        //   map.addSource('seattle', {
+        //       type: 'geojson',
+        //       data: seattle
+        //   });
 
-          map.addLayer({
-              'id': 'seattle-layer',
-              'type': 'fill',
-              'source': 'seattle',
-              'paint': {
-                  'fill-color': '#0080ff', // blue color fill
-                  'fill-opacity': 0.3
-              }
-          });
+        //   map.addLayer({
+        //       'id': 'seattle-layer',
+        //       'type': 'fill',
+        //       'source': 'seattle',
+        //       'paint': {
+        //           'fill-color': '#0080ff', // blue color fill
+        //           'fill-opacity': 0.3
+        //       }
+        //   });
         });
 
-          map.addSource('schools', {
+          map.addSource('libraries', {
               type: 'geojson',
-              data: schools
+              data: libraries
           });
 
           map.addLayer({
-              'id': 'schools-layer',
+              'id': 'libraries-layer',
               'type': 'circle',
-              'source': 'schools',
+              'source': 'libraries',
               'paint': {
                   'circle-radius': 8,
                   'circle-stroke-width': 2,
