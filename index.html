@@ -1,186 +1,152 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
+ <head>
     <meta charset="utf-8">
-    <title>Libraries</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-
-      #container {
-        display: flex;
-        height: 100vh;
-        flex-direction: row;
-        align-items: stretch;
-      }
-
-      #side-panel {
-        flex-basis: 500px;
-        overflow-y: scroll;
-      }
-
-      #map {
-        flex-grow: 1;
-      }
-
-      button {
-        margin-bottom: 10px;
-      }
-
-      table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        width: 100%;
-        border: 1px solid #ddd;
-      }
-
-      th, td {
-        text-align: left;
-        padding: 16px;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      @media screen and (max-width: 1024px) {
-        #side-panel {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main id="container">
-        <div id="side-panel">
-
-            <h2>Seattle Schools</h2>
-            <button>Sort Alphabetically</button>
-
-            <table>
-                <tr>
-                    <th>School</th>
-                    <th>Type</th>
-                    <th>Address</th>
-                </tr>
-            </table>
-
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet'/>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class='sidebar'>
+        <div class='heading'>
+          <h1>Libraries</h1>
         </div>
-    <div id="map"></div>
-    </main>
+        <div id='listings' class='listings'></div>
+      </div>
+      <div id="map" class="map"></div>
     <script>
-      mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
 
-      let map = new mapboxgl.Map({
-        container: 'map', // container ID
-        style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
-        zoom: 6.5, // starting zoom
-        center: [-122.3, 47.65] // starting center
-      });
-
-      async function geojsonFetch() {
-        let response, schools, seattle, table;
-        response = await fetch('assets/Washington_Library_Locations.geojson');
-        libraries = await response.json();
-        // response = await fetch('assets/seattle.geojson');
-        // seattle = await response.json();
-
-        //load data to the map as new layers and table on the side.
-        map.on('load', function loadingData() {
-          geojsonFetch();
-
-        //   map.addSource('seattle', {
-        //       type: 'geojson',
-        //       data: seattle
-        //   });
-
-        //   map.addLayer({
-        //       'id': 'seattle-layer',
-        //       'type': 'fill',
-        //       'source': 'seattle',
-        //       'paint': {
-        //           'fill-color': '#0080ff', // blue color fill
-        //           'fill-opacity': 0.3
-        //       }
-        //   });
+        let map = new mapboxgl.Map({
+            container: 'map', // container ID
+            style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
+            zoom: 6.5, // starting zoom
+            center: [-122.3, 47.65] // starting center
         });
 
-          map.addSource('libraries', {
-              type: 'geojson',
-              data: libraries
-          });
+        function buildLocationList(libraries) {
+            for (const library of libraries.features) {
+                /* Add a new listing section to the sidebar. */
+                const listings = document.getElementById('listings');
+                const listing = listings.appendChild(document.createElement('div'));
+                /* Assign a unique `id` to the listing. */
+                listing.id = `listing-${library.properties.id}`;
+                /* Assign the `item` class to each listing for styling. */
+                listing.className = 'item';
 
-          map.addLayer({
-              'id': 'libraries-layer',
-              'type': 'circle',
-              'source': 'libraries',
-              'paint': {
-                  'circle-radius': 8,
-                  'circle-stroke-width': 2,
-                  'circle-color': 'blue',
-                  'circle-stroke-color': 'white'
-              }
-          });
+                /* Add the link to the individual listing created above. */
+                const link = listing.appendChild(document.createElement('a'));
+                link.href = '#';
+                link.className = 'title';
+                link.id = `link-${library.properties.id}`;
+                link.innerHTML = `${library.properties.Library}`;
 
-        table = document.getElementsByTagName("table")[0];
-        let row, cell1, cell2, cell3;
-        for (let i = 0; i < schools.features.length; i++) {
-            // Create an empty <tr> element and add it to the 1st position of the table:
-            row = table.insertRow(-1);
-            cell1 = row.insertCell(0);
-            cell2 = row.insertCell(1);
-            cell3 = row.insertCell(2);
-            cell1.innerHTML = schools.features[i].properties.SCHOOL;
-            cell2.innerHTML = schools.features[i].properties.TYPE;
-            cell3.innerHTML = schools.features[i].properties.ADDRESS;
+                /* Add details to the individual listing. */
+                const details = listing.appendChild(document.createElement('div'));
+                details.innerHTML = `${library.properties.LDLI_City}`;
+                if (library.properties.LDLI_Address1) {
+                    details.innerHTML += ` · ${library.properties.LDLI_Address1}`;
+                }
+                // if (library.properties.LDLI_URL) {
+                //     details.innerHTML += ` · ${library.properties.LDLI_URL}`;
+                // }
+                // if (library.properties.LDTC_TypeDescription) {
+                //     details.innerHTML += ` · ${library.properties.LDTC_TypeDescription}`;
+                // }
+
+                link.addEventListener('click', function () {
+                for (const feature of libraries.features) {
+                    if (this.id === `link-${feature.properties.id}`) {
+                        flyToStore(feature);
+                        createPopUp(feature);
+                    }
+                }
+                const activeItem = document.getElementsByClassName('active');
+                if (activeItem[0]) {
+                    activeItem[0].classList.remove('active');
+                }
+                    this.parentNode.classList.add('active');
+                });
+            }
         }
-      };
 
-      geojsonFetch();
+        function flyToStore(currentFeature) {
+            map.flyTo({
+                center: currentFeature.geometry.coordinates,
+                zoom: 15
+            });
+        }
 
-      let btn = document.getElementsByTagName("button")[0];
-      btn.addEventListener('click', sortTable);
-      // define the function to sort table
-      function sortTable(e) {
-          let table, rows, switching, i, x, y, shouldSwitch;
-          table = document.getElementsByTagName("table")[0];
-          switching = true;
-          /*Make a loop that will continue until
-          no switching has been done:*/
-          while (switching) {
-            //start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /*Loop through all table rows (except the
-            first, which contains table headers):*/
-            for (i = 1; i < (rows.length - 1); i++) {
-              //start by saying there should be no switching:
-              shouldSwitch = false;
-              /*Get the two elements you want to compare,
-              one from current row and one from the next:*/
-              x = rows[i].getElementsByTagName("td")[0].innerHTML;
-              y = rows[i + 1].getElementsByTagName("td")[0].innerHTML;
-              //check if the two rows should switch place:
-              if (x > y) {
-                //if so, mark as a switch and break the loop:
-                shouldSwitch = true;
-                break;
-              }
-            }
-            if (shouldSwitch) {
-              /*If a switch has been marked, make the switch
-              and mark that a switch has been done:*/
-              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-              switching = true;
-            }
-          }
-      }
+        function createPopUp(currentFeature) {
+            const popUps = document.getElementsByClassName('mapboxgl-popup');
+            /** Check if there is already a popup on the map and if so, remove it */
+            if (popUps[0]) popUps[0].remove();
 
+            const popup = new mapboxgl.Popup({closeOnClick: false})
+                .setLngLat(currentFeature.geometry.coordinates)
+                .setHTML(`<h3>Name</h3><h4>${currentFeature.properties.Library}</h4>`)
+                .addTo(map);
+        }
+
+        async function geojsonFetch() { 
+            // other operations
+            let response = await fetch('assets/Washington_Library_Locations.geojson');
+            let libraries = await response.json();
+
+            /* Assign a unique ID to each store */
+            libraries.features.forEach(function (library, i) {
+                library.properties.id = i;
+            });
+
+            map.on('load', function loadingData() {
+
+                map.addSource('libraries', {
+                    type: 'geojson',
+                    data: libraries
+                });
+
+                map.addLayer({
+                    'id': 'library-layer',
+                    'type': 'circle',
+                    'source': 'libraries',
+                    'paint': {
+                        'circle-radius': 8,
+                        'circle-stroke-width': 2,
+                        'circle-color': 'red',
+                        'circle-stroke-color': 'white'
+                    }
+                });
+            });
+            // map.on('click', (event) => {
+            //     /* Determine if a feature in the "locations" layer exists at that point. */
+            //     const features = map.queryRenderedFeatures(event.point, {
+            //         layers: ['locations']
+            //     });
+
+            //     /* If it does not exist, return */
+            //     if (!features.length) return;
+
+            //     const clickedPoint = features[0];
+
+            //     /* Fly to the point */
+            //     flyToStore(clickedPoint);
+
+            //     /* Close all other popups and display popup for clicked store */
+            //     createPopUp(clickedPoint);
+
+            //     /* Highlight listing in sidebar (and remove highlight for all other listings) */
+            //     const activeItem = document.getElementsByClassName('active');
+            //     if (activeItem[0]) {
+            //         activeItem[0].classList.remove('active');
+            //     }
+            //     const listing = document.getElementById(
+            //         `listing-${clickedPoint.properties.id}`
+            //     );
+            //     listing.classList.add('active');
+            // });
+            buildLocationList(libraries);
+        };
+        geojsonFetch();
     </script>
-  </body>
-<html>
+</body>
+</html>
