@@ -13,4 +13,26 @@ https://soriabjo.github.io/geog495_libraryfinder/index.html
 ## Data Sources:
 We have settled on using data provided by Washington Geoservices and accessed through the [Washington Geospatial Open Data Portal](https://geo.wa.gov/datasets/f62ef46873bd4a80a31e3e88eafa43eb_0/explore?location=47.311825%2C-120.841168%2C7.40). This dataset provides coordinates for each library, as well as identifying information and key descriptors.
 
+## Applied Libraries: 
+The applied libraries that we used for the purposes of this project are 
+ 
+## Acknowledgments: 
+We would like to give thanks to our professor, Dr. Bo Zhao, and our teaching assistant, Steven Bao, for teaching us the necessary tools throughout the quarter in order for us to complete this project successfully.
+
+## Other Info: 
+ 
+ 
+ 
+### Icons
+The icons used for our markers in our project are all from flaticon.com.
+![Graduation cap or mortarboard](img\academic.png)
+This [Graduation cap icons created by Iconiyo - Flaticon](https://www.flaticon.com/free-icons/graduation-cap" title="graduation cap icons) is used to signify academic libraries in the project.
+![Government building](img\government.png) 
+This [Government icons created by Vector Stall - Flaticon](https://www.flaticon.com/free-icons/government" title="government icons) is used to signify government libraries in the project.
+![person](img\public.png)
+This [User icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/user) is used to signify public libraries in the project.
+![lightbulb](img\special.png)
+This [Bulb icons created by Creative Stall Premium - Flaticon](https://www.flaticon.com/free-icons/bulb) is used to signify special libraries in the project.
+
+
 
