@@ -1,14 +1,23 @@
 # Washington State Library Finder
 **Contributors:** Alex Kirchmeier, Bjorn Soriano, Laura Kirk, Minjie Kim
 ## Project Description
-For our final project we have built a sort data by distance application to allow our users to identify nearby libraries to their location at the University of Washington.  We have included a web map that locates all the libraries in the state of Washington. The base map that we created for our application has a monochrome theme that highlights the streets. We have then included our libraries in point format as a layer on top of the base map. Each library has an icon that distinguishes the main purpose of each library. Hovering over each library will display a popup of the library containing information such as its phone contact number, their website, long/lat location, city, county, and any other relevant information that helps our intended audience better choose the library for their needs. There is a search bar in the upper left hand corner of the map that allows users to type in their address and discover the library that is closest to them. Once a user types in and selects their address the map will zoom to their address and show the highlighted library that is closest to them with information on that library. 
+For our final project in Geography 495: Web GIS, we have built an application that sorts data by distance to allow our users to identify nearby libraries to their location at the University of Washington and filter out relevant libraries based on category. We have also included a web map that includes the locations of all the libraries within the state of Washington. The base map that we created for our application has a light blue-gray monochrome theme that highlights the streets in black. We then included all the libraries in Washington in point format as a layer on top of the base map. Each library has an icon that distinguishes the main purpose of each library, categorized as academic, government, public, and special libraries. If you hover over each library, then it will display a popup of the library containing information such as its phone contact number, their website, long/lat location, city, county, and any other relevant information that helps our intended audience better choose the library for their needs. There is a search bar in the upper left hand corner of the map that allows users to type in their address and discover the library that is closest to them. Once a user types in and selects their address the map will zoom to their address and show the highlighted library that is closest to them with the information on that library.  
+
 ## Project Goals 
-Libraries are very resourceful locations for students during the research process. However, we feel that they often get overlooked for research purposes these days due to the accessibility of resources online. By creating a convenient tool that helps users find libraries in Washington state nearby them and the focus or purpose of each one we hope that they will use the libraries more. 
+Libraries are very resourceful locations for students whether it is used as a tool for the research process, entertainment use (finding the next good book or renting a movie), or just as a quiet study space. However, we feel that libraries are often overlooked for research purposes these days due to the accessibility of resources online. By creating a convenient tool that helps users find nearby libraries in Washington state that correspond with their needs, we hope that they will be able to take full advantage of these wonderful resources! 
 
 ## Application Url: 
 https://soriabjo.github.io/geog495_libraryfinder/index.html
 
 ## Screen Shots: 
+1. What the application looks like at the start
+<img src="/img/start.JPG" alt="start of application" width=800>
+2. What the map looks like when you filter out a category
+<img src="/img/filter.JPG" alt="filter out category" width=800>
+3. How the map looks like when you search your location
+<img src="/img/location.JPG" alt="zoom into searched location" width=800>
+4. What the information pop-up panel looks like when you click on a library marker
+<img src="/img/information.JPG" alt="library information pop-up" width=800>
 
 ## Data Sources:
 We have settled on using data provided by Washington Geoservices and accessed through the [Washington Geospatial Open Data Portal](https://geo.wa.gov/datasets/f62ef46873bd4a80a31e3e88eafa43eb_0/explore?location=47.311825%2C-120.841168%2C7.40). This dataset provides coordinates for each library, as well as identifying information and key descriptors.
