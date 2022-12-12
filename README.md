@@ -27,19 +27,19 @@ The icons used for our markers in our project are all from flaticon.com.
 
 <img src="/img/academic.png" alt="mortarboard" width=100>
 
-This [Graduation cap icons created by Iconiyo - Flaticon](https://www.flaticon.com/free-icons/graduation-cap) is used to signify academic libraries in the project.
+This [Graduation cap icons created by Iconiyo - Flaticon](https://www.flaticon.com/free-icons/graduation-cap) is used to signify academic libraries in the application.
 
 <img src="/img/government.png" alt="Government building" width=100>
 
-This [Government icons created by Vector Stall - Flaticon](https://www.flaticon.com/free-icons/government) is used to signify government libraries in the project.
+This [Government icons created by Vector Stall - Flaticon](https://www.flaticon.com/free-icons/government) is used to signify government libraries in the application.
 
 <img src="/img/public.png" alt="person" width=100>
 
-This [User icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/user) is used to signify public libraries in the project.
+This [User icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/user) is used to signify public libraries in the application.
 
 <img src="/img/special.png" alt="lightbulb" width=100>
 
-This [Bulb icons created by Creative Stall Premium - Flaticon](https://www.flaticon.com/free-icons/bulb) is used to signify special libraries in the project.
+This [Bulb icons created by Creative Stall Premium - Flaticon](https://www.flaticon.com/free-icons/bulb) is used to signify special libraries in the application.
 
 
 
