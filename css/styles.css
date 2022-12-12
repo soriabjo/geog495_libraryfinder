@@ -180,3 +180,17 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 .mapboxgl-popup {
     padding-bottom: 50px;
   }
+
+  .mapboxgl-ctrl-geocoder {
+    border: 0;
+    border-radius: 0;
+    position: relative;
+    top: 0;
+    width: 800px;
+    margin-top: 0;
+  }
+  
+  .mapboxgl-ctrl-geocoder > div {
+    min-width: 100%;
+    margin-left: 0;
+  }

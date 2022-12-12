@@ -5,6 +5,15 @@
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet'/>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Geocoder plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+    type="text/css"
+    />
+    <!-- Turf.js plugin -->
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
 </head>
 <body>
     <div class='sidebar'>
@@ -23,6 +32,7 @@
             zoom: 6.5, // starting zoom
             center: [-122.3, 47.65] // starting center
         });
+        
 
         function buildLocationList(libraries) {
             for (const library of libraries.features) {
@@ -54,6 +64,11 @@
                 //     details.innerHTML += ` · ${library.properties.LDTC_TypeDescription}`;
                 // }
 
+                if (library.properties.distance) {
+                    const roundedDistance = Math.round(library.properties.distance * 100) / 100;
+                    details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
+                    }
+        
                 link.addEventListener('click', function () {
                 for (const feature of libraries.features) {
                     if (this.id === `link-${feature.properties.id}`) {
@@ -117,6 +132,52 @@
                 //         'circle-stroke-color': 'white'
                 //     }
                 // });
+                const geocoder = new MapboxGeocoder({
+                accessToken: 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA',
+                mapboxgl: mapboxgl,
+                marker: true,
+                bbox: [-126.40427330620177,45.79458986222507, -117.03375066747917,49.00697636022251]
+                });
+                map.addControl(geocoder, 'top-left');
+
+
+                geocoder.on('result', (event) => {
+                const searchResult = event.result.geometry;
+                const options = { units: 'miles' };
+                for (const library of libraries.features) {
+                    library.properties.distance = turf.distance(
+                    searchResult,
+                    library.geometry,
+                    options
+                );
+                }
+                libraries.features.sort((a, b) => {
+                    if (a.properties.distance > b.properties.distance) {
+                        return 1;
+                    }
+                    if (a.properties.distance < b.properties.distance) {
+                        return -1;
+                    }
+                    return 0; // a must be equal to b
+                    });
+                    const listings = document.getElementById('listings');
+                    while (listings.firstChild) {
+                        listings.removeChild(listings.firstChild);
+                    }
+                    buildLocationList(libraries);  
+
+                    const activeListing = document.getElementById(
+                    `listing-${libraries.features[0].properties.id}`
+                    );
+                    activeListing.classList.add('active');
+
+                const bbox = getBbox(libraries, 0, searchResult);
+                map.fitBounds(bbox, {
+                padding: 100
+                });
+
+                createPopUp(libraries.features[0]);
+                });
             });
             // map.on('click', (event) => {
             //     /* Determine if a feature in the "locations" layer exists at that point. */
@@ -147,6 +208,41 @@
             // });
             buildLocationList(libraries);
 
+
+            function getBbox(sortedlibraries, libraryIdentifier, searchResult) {
+                const lats = [
+                sortedlibraries.features[libraryIdentifier].geometry.coordinates[1],
+                 searchResult.coordinates[1]
+                ];
+                const lons = [
+                    sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],
+                    searchResult.coordinates[0]
+                ];
+                const sortedLons = lons.sort((a, b) => {
+                    if (a > b) {
+                    return 1;
+                    }
+                    if (a.distance < b.distance) {
+                    return -1;
+                    }
+                    return 0;
+                });
+                const sortedLats = lats.sort((a, b) => {
+                    if (a > b) {
+                    return 1;
+                    }
+                    if (a.distance < b.distance) {
+                    return -1;
+                    }
+                    return 0;
+                });
+                return [
+                    [sortedLons[0], sortedLats[0]],
+                    [sortedLons[1], sortedLats[1]]
+                ];
+                }
+
+
             function addMarkers() {
                 /* For each feature in the GeoJSON object above: */
                 for (const marker of libraries.features) {
@@ -165,6 +261,7 @@
                     if (marker.properties.LDTC_TypeDescription === 'Public Libraries') {
                         el.className = 'markerP';
                     }
+
 
                     /**
                      * Create a marker using the div element
