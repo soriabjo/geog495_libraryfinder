@@ -1,294 +1,735 @@
 <!DOCTYPE html>
-<html lang="en-US">
- <head>
+<html>
+
+<head>
     <meta charset="utf-8">
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet'/>
-    <link rel="stylesheet" href="css/styles.css">
     <!-- Geocoder plugin -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
-    <link
-    rel="stylesheet"
-    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-    type="text/css"
-    />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+
     <!-- Turf.js plugin -->
     <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <title>Library Finder</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+  
+    body {
+        color: #404040;
+        font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin: 0;
+        font-weight: 400;
+        line-height: 20px;
+        padding: 20px 2px;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        text-align: center;
+        color: #008457;
+    }
+
+    a {
+        color: #404040;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #101010;
+    }
+
+    /* The page is split between map and sidebar - the sidebar gets 1/3, map
+    gets 2/3 of the page. You can adjust this to your personal liking. */
+    .sidebar {
+        position: absolute;
+        width: 25%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        border-right: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .map {
+        position: absolute;
+        left: 25%;
+        width: 75%;
+        top: 0;
+        bottom: 0;
+    }
+
+    .map-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: rgba(255, 255, 255, 0.8);
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.2);
+        margin-left: 20px;
+        font-family: Arial, sans-serif;
+        overflow: auto;
+        border-radius: 3px;
+    }
+
+    .heading {
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        height: 60px;
+        line-height: 60px;
+        padding: 0 10px;
+    }
+</style>
 </head>
+
 <body>
+<style>
+    #menu {
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: 10px;
+        border-radius: 3px;
+        width: 120px;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+    font-size: 13px;
+    color: #404040;
+    display: block;
+    margin: 0;
+    padding: 0;
+    padding: 10px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    } 
+
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+
+    h2, h3 {
+            margin: 10px;
+            font-size: 18px;
+    }
+
+    h3 {
+        font-size: 16px;
+    }
+
+    p {
+        margin: 10px;
+    }
+
+    #features {
+        top: 0;
+        height: 100px;
+        margin-top: 20px;
+        width: 300px;
+    }
+
+    #legend {
+        padding: 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        line-height: 18px;
+        height: 180px;
+        margin-bottom: 40px;
+        width: 170px;
+    }
+
+    .legend-key {
+        display: inline-block;
+        border-radius: 20%;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+    }
+
+    .mapboxgl-canvas-container.mapboxgl-interactive,
+    .mapboxgl-ctrl-group button.mapboxgl-ctrl-compass {
+        cursor: unset;
+    }
+
+    .listings {
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 60px;
+    }
+
+    .listings .item {
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+    text-decoration: none;
+    }
+
+    .listings .item:last-child { border-bottom: none; }
+
+    .listings .item .title {
+    display: block;
+    color: #340065;
+    font-weight: 700;
+    }
+
+    .listings .item .title small { font-weight: 400; }
+
+    .listings .item.active .title,
+    .listings .item .title:hover { color: #5700a8; }
+
+    .listings .item.active {
+    background-color: #c9c9c9;
+    }
+
+    ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+    border-left: 0;
+    background: rgba(0, 0, 0, 0.1);
+    }
+
+    ::-webkit-scrollbar-track {
+    background: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+    background: #000000;
+    border-radius: 0;
+    }
+
+    /* Marker tweaks */
+    .mapboxgl-popup-close-button {
+    display: none;
+    }
+
+    .mapboxgl-popup-content {
+    font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+    padding: 0;
+    width: 410px;
+    }
+
+    .mapboxgl-popup-content h3 {
+    background: #18829a;
+    color: #fff;
+    margin: 0;
+    padding: 10px;
+    border-radius: 3px 3px 0 0;
+    font-weight: 700;
+    margin-top: -15px;
+    }
+
+    .mapboxgl-popup-content h4 {
+    margin: 0;
+    padding: 10px;
+    font-weight: 400;
+    }
+
+    .mapboxgl-popup-content div {
+    padding: 10px;
+    }
+
+    .mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
+    margin-top: 15px;
+    }
+
+    .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+    border-bottom-color: #91c949;
+    }
+    
+    .markerA {
+    border-color: black;
+    cursor: pointer;
+    height: 56px;
+    width: 56px;
+    background-image: url(../img/academic.png);
+    }
+
+    .markerG {
+        border: none;
+        cursor: pointer;
+        height: 56px;
+        width: 56px;
+        background-image: url(../img/government.png);
+    }
+
+    .markerP {
+        border: none;
+        cursor: pointer;
+        height: 56px;
+        width: 56px;
+        background-image: url(../img/public.png);
+    }
+
+    .markerS {
+        border: none;
+        cursor: pointer;
+        height: 56px;
+        width: 56px;
+        background-image: url(../img/special.png);
+    }
+
+    .mapboxgl-ctrl-geocoder {
+        border: 0;
+        border-radius: 0;
+        position: relative;
+        top: 0;
+        width: 800px;
+        margin-top: 0;
+    }
+
+        .mapboxgl-ctrl-geocoder > div {
+        min-width: 100%;
+        margin-left: 0;
+    }
+</style>
     <div class='sidebar'>
         <div class='heading'>
-          <h1>Libraries in Washington State</h1>
+            <h1>Washington Libraries</h1>
         </div>
         <div id='listings' class='listings'></div>
-      </div>
-      <div id="map" class="map"></div>
+    </div>
+    <nav id="menu"></nav>
+    <div id="map" class="map"></div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
 
         const map = new mapboxgl.Map({
-            container: 'map', // container ID
-            style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
-            zoom: 6.5, // starting zoom
-            center: [-122.3, 47.65] // starting center
-        });
-        
-
-        function buildLocationList(libraries) {
-            for (const library of libraries.features) {
-                /* Add a new listing section to the sidebar. */
-                const listings = document.getElementById('listings');
-                const listing = listings.appendChild(document.createElement('div'));
-                /* Assign a unique `id` to the listing. */
-                listing.id = `listing-${library.properties.id}`;
-                /* Assign the `item` class to each listing for styling. */
-                listing.className = 'item';
-
-                /* Add the link to the individual listing created above. */
-                const link = listing.appendChild(document.createElement('a'));
-                link.href = '#';
-                link.className = 'title';
-                link.id = `link-${library.properties.id}`;
-                link.innerHTML = `${library.properties.Library}`;
-
-                /* Add details to the individual listing. */
-                const details = listing.appendChild(document.createElement('div'));
-                details.innerHTML = `${library.properties.LDLI_City}`;
-                if (library.properties.LDLI_Address1) {
-                    details.innerHTML += ` · ${library.properties.LDLI_Address1}`;
-                }
-                // if (library.properties.LDLI_URL) {
-                //     details.innerHTML += ` · ${library.properties.LDLI_URL}`;
-                // }
-                // if (library.properties.LDTC_TypeDescription) {
-                //     details.innerHTML += ` · ${library.properties.LDTC_TypeDescription}`;
-                // }
-
-                if (library.properties.distance) {
-                    const roundedDistance = Math.round(library.properties.distance * 100) / 100;
-                    details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
-                    }
-        
-                link.addEventListener('click', function () {
-                for (const feature of libraries.features) {
-                    if (this.id === `link-${feature.properties.id}`) {
-                        flyToStore(feature);
-                        createPopUp(feature);
-                    }
-                }
-                const activeItem = document.getElementsByClassName('active');
-                if (activeItem[0]) {
-                    activeItem[0].classList.remove('active');
-                }
-                    this.parentNode.classList.add('active');
-                });
+                container: 'map', // container ID
+                style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
+                zoom: 6.5, // starting zoom
+                center: [-120.20130713727846, 47.33402155859716] // starting center
             }
-        }
+        );
 
-        function flyToStore(currentFeature) {
-            map.flyTo({
-                center: currentFeature.geometry.coordinates,
-                zoom: 15
-            });
-        }
-
-        function createPopUp(currentFeature) {
-            const popUps = document.getElementsByClassName('mapboxgl-popup');
-            /** Check if there is already a popup on the map and if so, remove it */
-            if (popUps[0]) popUps[0].remove();
-
-            const popup = new mapboxgl.Popup({closeOnClick: false})
-                .setLngLat(currentFeature.geometry.coordinates)
-                .setHTML(`<h3>${currentFeature.properties.Library}</h3><h4>Other Info</h4>`)
-                .addTo(map);
-        }
-
-        async function geojsonFetch() { 
-            // other operations
+        async function geojsonFetch() {
             let response = await fetch('assets/Washington_Library_Locations.geojson');
-            let libraries = await response.json();
+            let libraryData = await response.json();
 
-            /* Assign a unique ID to each store */
-            libraries.features.forEach(function (library, i) {
+            let academicLibraries = await fetch('assets/academic_library_subset.geojson');
+            let academicLibrary = await academicLibraries.json();
+
+            let govLibraries = await fetch('assets/government_library_subset.geojson');
+            let governmentLibrary = await govLibraries.json();
+
+            let pubData = await fetch('assets/public_library_subset.geojson');
+            let publicLibrary = await pubData.json();
+
+            let spLibraries = await fetch('assets/special_library_subset.geojson');
+            let specialLibrary = await spLibraries.json();
+
+            libraryData.features.forEach(function (library, i) {
                 library.properties.id = i;
             });
 
+
             map.on('load', function loadingData() {
 
-                map.addSource('libraries', {
+                map.addSource('libraryData', {
                     type: 'geojson',
-                    data: libraries
+                    data: libraryData
                 });
-                addMarkers();
 
-                // map.addLayer({
-                //     'id': 'library-layer',
-                //     'type': 'circle',
-                //     'source': 'libraries',
-                //     'paint': {
-                //         'circle-radius': 8,
-                //         'circle-stroke-width': 2,
-                //         'circle-color': 'red',
-                //         'circle-stroke-color': 'white'
-                //     }
-                // });
+                map.addLayer({
+                    'id': 'All',
+                    'type': 'circle',
+                    'source': 'libraryData',
+                    'layout': {
+                        // Make layer visible by default
+                        'visibility': 'visible'
+                    },
+                    'paint': {
+                        'circle-radius': 1,
+                        'circle-stroke-width': 1,
+                        'circle-color': 'black',
+                        'circle-stroke-color': 'black'
+                    }
+                });
+                addMarkers(libraryData);
+
                 const geocoder = new MapboxGeocoder({
-                accessToken: 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA',
-                mapboxgl: mapboxgl,
-                marker: true,
-                bbox: [-126.40427330620177,45.79458986222507, -117.03375066747917,49.00697636022251]
+                    accessToken: mapboxgl.accessToken, // Set the access token
+                    mapboxgl: mapboxgl, // Set the mapbox-gl instance
+                    marker: true, // Use the geocoder's default marker style
+                    bbox: [-126.40427330620177,45.79458986222507, -117.03375066747917,49.00697636022251] // Set the bounding box coordinates
                 });
                 map.addControl(geocoder, 'top-left');
 
-
                 geocoder.on('result', (event) => {
-                const searchResult = event.result.geometry;
-                const options = { units: 'miles' };
-                for (const library of libraries.features) {
-                    library.properties.distance = turf.distance(
-                    searchResult,
-                    library.geometry,
-                    options
-                );
-                }
-                libraries.features.sort((a, b) => {
-                    if (a.properties.distance > b.properties.distance) {
-                        return 1;
+                    const searchResult = event.result.geometry;
+                    const options = { units: 'miles' };
+                    for (const library of libraryData.features) {
+                        library.properties.distance = turf.distance(
+                            searchResult,
+                            library.geometry,
+                            options
+                        );
                     }
-                    if (a.properties.distance < b.properties.distance) {
-                        return -1;
-                    }
-                    return 0; // a must be equal to b
+                    libraryData.features.sort((a,b) => {
+                        if (a.properties.distance > b,properties.distance) {
+                            return 1;
+                        }
+                        if (a.properties.distance < b.properties.distance) {
+                            return -1;
+                        }
+                        return 0;
                     });
                     const listings = document.getElementById('listings');
                     while (listings.firstChild) {
                         listings.removeChild(listings.firstChild);
                     }
-                    buildLocationList(libraries);  
+                    buildLocationList(libraryData);
 
-                    const activeListing = document.getElementById(
-                    `listing-${libraries.features[0].properties.id}`
-                    );
+                    const activeListing = document.getElementById(`listing-${libraryData.features[0].properties.id}`);
                     activeListing.classList.add('active');
 
-                const bbox = getBbox(libraries, 0, searchResult);
-                map.fitBounds(bbox, {
-                padding: 100
+                    const bbox = getBbox(libraryData, 0, searchResult);
+                    map.fitBounds(bbox, {
+                        padding: 100
+                    });
+                    createPopUp(libraryData.features[0]);
                 });
 
-                createPopUp(libraries.features[0]);
-                });
-            });
-            // map.on('click', (event) => {
-            //     /* Determine if a feature in the "locations" layer exists at that point. */
-            //     const features = map.queryRenderedFeatures(event.point, {
-            //         layers: ['locations']
-            //     });
+                buildLocationList(libraryData);
 
-            //     /* If it does not exist, return */
-            //     if (!features.length) return;
+                function getBbox(sortedLibraries, libraryIdentifier, searchResult) {
+                    const lats = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[1], searchResult.coordinates[1]];
+                    const lons = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],searchResult.coordinates[0]];
+                    
+                    const sortedLons = lons.sort((a,b) => {
+                        if (a > b) {
+                            return 1;
+                        }
+                        if (a.distance < b.distance) {
+                            return -1;
+                        }
+                        return 0;
+                    });
 
-            //     const clickedPoint = features[0];
-
-            //     /* Fly to the point */
-            //     flyToStore(clickedPoint);
-
-            //     /* Close all other popups and display popup for clicked store */
-            //     createPopUp(clickedPoint);
-
-            //     /* Highlight listing in sidebar (and remove highlight for all other listings) */
-            //     const activeItem = document.getElementsByClassName('active');
-            //     if (activeItem[0]) {
-            //         activeItem[0].classList.remove('active');
-            //     }
-            //     const listing = document.getElementById(
-            //         `listing-${clickedPoint.properties.id}`
-            //     );
-            //     listing.classList.add('active');
-            // });
-            buildLocationList(libraries);
-
-
-            function getBbox(sortedlibraries, libraryIdentifier, searchResult) {
-                const lats = [
-                sortedlibraries.features[libraryIdentifier].geometry.coordinates[1],
-                 searchResult.coordinates[1]
-                ];
-                const lons = [
-                    sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],
-                    searchResult.coordinates[0]
-                ];
-                const sortedLons = lons.sort((a, b) => {
-                    if (a > b) {
-                    return 1;
-                    }
-                    if (a.distance < b.distance) {
-                    return -1;
-                    }
-                    return 0;
-                });
-                const sortedLats = lats.sort((a, b) => {
-                    if (a > b) {
-                    return 1;
-                    }
-                    if (a.distance < b.distance) {
-                    return -1;
-                    }
-                    return 0;
-                });
-                return [
-                    [sortedLons[0], sortedLats[0]],
-                    [sortedLons[1], sortedLats[1]]
-                ];
+                    const sortedLats = lats.sort((a,b) => {
+                        if (a > b) {
+                            return 1;
+                        }
+                        if (a.distance < b.distance) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+                    return [
+                        [sortedLons[0], sortedLats[0]],
+                        [sortedLons[1], sortedLats[1]]
+                    ];
                 }
 
+                function buildLocationList(libraryData) {
+                    for (const library of libraryData.features) {
+                        /* Add new listing section to sidebar. */ 
+                        const listings = document.getElementById('listings');
+                        const listing = listings.appendChild(document.createElement('div'));
+                        /* Assign unique `id` to listing */ 
+                        listing.id = `listing-${library.properties.id}`;
+                        /* Assign `item` class to each listing for styling */
+                        listing.className = 'item';
 
-            function addMarkers() {
-                /* For each feature in the GeoJSON object above: */
-                for (const marker of libraries.features) {
-                    /* Create a div element for the marker. */
-                    const el = document.createElement('div');
-                    /* Assign a unique `id` to the marker. */
-                    el.id = `marker-${marker.properties.id}`;
-                    /* Assign the `marker` class to each marker for styling. */
-                    el.className = 'markerS';
-                    if (marker.properties.LDTC_TypeDescription === 'Academic Libraries') {
-                        el.className = 'markerA';
-                    }
-                    if (marker.properties.LDTC_TypeDescription === 'Government Libraries') {
-                        el.className = 'markerG';
-                    }
-                    if (marker.properties.LDTC_TypeDescription === 'Public Libraries') {
-                        el.className = 'markerP';
-                    }
+                        /*Add link to indiv. listing created above */ 
+                        const link = listing.appendChild(document.createElement('a'));
+                            link.href = '#';
+                            link.className = 'title';
+                            link.id = `link-${library.properties.id}`;
+                            link.innerHTML = `${library.properties.Library}`;
 
-
-                    /**
-                     * Create a marker using the div element
-                     * defined above and add it to the map.
-                     **/
-                    new mapboxgl.Marker(el, {offset: [0, -23]})
-                        .setLngLat(marker.geometry.coordinates)
-                        .addTo(map);
-                    
-                    el.addEventListener('click', (e) => {
-                        /* Fly to the point */
-                        flyToStore(marker);
-                        /* Close all other popups and display popup for clicked store */
-                        createPopUp(marker);
-                        /* Highlight listing in sidebar */
-                        const activeItem = document.getElementsByClassName('active');
-                        e.stopPropagation();
-                        if (activeItem[0]) {
-                            activeItem[0].classList.remove('active');
+                        const details = listing.appendChild(document.createElement('div'));
+                        details.innerHTML =  `${library.properties.LDLI_City}`;
+                        if (library.properties.LDLI_Address1) {
+                            details.innerHTML += ` | ${library.properties.LDLI_Address1}`;
                         }
-                        const listing = document.getElementById(`listing-${marker.properties.id}`);
-                        listing.classList.add('active');
+                        if(library.properties.distance) {
+                            const roundedDistance = Math.round(library.properties.distance * 100) / 100;
+                            details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
+                        }
+                        if (library.properties.LDLI_AddPhones) {
+                            details.innerHTML += ` | ${library.properties.LDLI_AddPhones}`;
+                        }
+
+                        link.addEventListener('click', function () {
+                            for (const feature of libraryData.features) {
+                                if (this.id === `link-${feature.properties.id}`) {
+                                    flyToLibrary(feature);
+                                    createPopUp(feature);
+                                }
+                            }
+                            const activeItem = document.getElementsByClassName('active');
+                            if (activeItem[0]) {
+                                activeItem[0].classList.remove('active');
+                            }
+                            this.parentNode.classList.add('active');
+                        });
+                    }
+                }
+
+                function flyToLibrary(currentFeature) {
+                    map.flyTo({
+                        center: currentFeature.geometry.coordinates,
+                        zoom: 10
                     });
                 }
-            }
-        };
+
+                function createPopUp(currentFeature) {
+                    const popUps = document.getElementsByClassName('mapboxgl-popup');
+                    /* check if already a popup on map. remove if so */ 
+                    if (popUps[0]) popUps[0].remove();
+
+                    const popup = new mapboxgl.Popup({closeOnClick: false})
+                        .setLngLat(currentFeature.geometry.coordinates)
+                        .setHTML(`<h3>${currentFeature.properties.Library}</h3><h4><strong><u>Type:</u></strong> ${currentFeature.properties.LDTC_TypeDescription}</h4>
+                            <h4><strong><u>Branch:</u></strong> ${currentFeature.properties.Branch}</h4>
+                            <h4><strong><u>Email:</u></strong> ${currentFeature.properties.LDLI_email}</h4>
+                            <h4><strong><u>Website:</u></strong> ${currentFeature.properties.LDLI_URL}</h4>`)
+                        .addTo(map);
+                }
+
+                function addMarkers(libraryData) {
+                    /* For each feature in the GeoJSON object above: */
+                    for (const marker of libraryData.features) {
+                        /* Create a div element for the marker. */
+                        const el = document.createElement('div');
+                        /* Assign a unique `id` to the marker. */
+                        el.id = `marker-${marker.properties.id}`;
+                        /* Assign the `marker` class to each marker for styling. */
+                        el.className = 'markerS';
+                        if (marker.properties.LDTC_TypeDescription === 'Academic Libraries') {
+                            el.className = 'markerA';
+                        }
+                        if (marker.properties.LDTC_TypeDescription === 'Government Libraries') {
+                            el.className = 'markerG';
+                        }
+                        if (marker.properties.LDTC_TypeDescription === 'Public Libraries') {
+                            el.className = 'markerP';
+                        }
+
+                        /**
+                         * Create a marker using the div element
+                         * defined above and add it to the map.
+                         **/
+                        console.log('Pos coordinates: ' + marker.geometry.coordinates);
+                        new mapboxgl.Marker(el, {offset: [0, -23]})
+                            .setLngLat(marker.geometry.coordinates)
+                            .addTo(map);
+                        
+                        el.addEventListener('click', (e) => {
+                            /* Fly to the point */
+                            flyToLibrary(marker);
+                            /* Close all other popups and display popup for clicked store */
+                            createPopUp(marker);
+                            /* Highlight listing in sidebar */
+                            const activeItem = document.getElementsByClassName('active');
+                            e.stopPropagation();
+                            if (activeItem[0]) {
+                                activeItem[0].classList.remove('active');
+                            }
+                            const listing = document.getElementById(`listing-${marker.properties.id}`);
+                            listing.classList.add('active');
+                        });
+                    }
+                }
+
+                map.loadImage(
+                    'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/academic.png',
+                    (error, image) => {
+                        if (error) throw error;
+                        
+                        // Add the image to the map style.
+                        map.addImage('academic', image);
+                        
+                        // Add a data source containing one point feature.
+                        map.addSource('academicLibraries', {
+                        'type': 'geojson',
+                        'data': academicLibrary
+                        });
+
+                        map.addLayer({
+                            'id': 'Academic',
+                            'type': 'symbol',
+                            'source': 'academicLibraries',
+                            'layout': {
+                                // Make layer visible by default
+                                'visibility': 'none'
+                            },
+                            'layout': {
+                                'icon-image': 'academic',
+                                'icon-size': 0.04
+                            }
+                        });
+                    }
+                );
+
+
+                map.loadImage(
+                    'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/government.png',
+                    (error, image) => {
+                        if (error) throw error;
+                        
+                        // Add the image to the map style.
+                        map.addImage('government', image);
+                    
+                        map.addSource('govLibraries', {
+                            type: 'geojson',
+                            data: governmentLibrary
+                        });
+                        
+                        map.addLayer({
+                            'id': 'Government',
+                            'type': 'symbol',
+                            'source': 'govLibraries',
+                            'layout': {
+                                // Make layer visible by default
+                                'visibility': 'none'
+                            },
+                            'layout': {
+                                'icon-image': 'government',
+                                'icon-size': 0.04
+                            }
+                        });
+                    }
+                );
+                
+                map.loadImage(
+                    'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/public.png',
+                    (error, image) => {
+                        if (error) throw error;
+                        
+                        // Add the image to the map style.
+                        map.addImage('public', image);
+
+                        map.addSource('pubLibraries', {
+                            type: 'geojson',
+                            data: publicLibrary
+                        });
+                        
+                        map.addLayer({
+                            'id': 'Public',
+                            'type': 'symbol',
+                            'source': 'pubLibraries',
+                            'layout': {
+                                // Make layer visible by default
+                                'visibility': 'none'
+                            },
+                            'layout': {
+                                'icon-image': 'public',
+                                'icon-size': 0.04
+                            }
+                        });
+                    }
+                );
+
+                map.loadImage(
+                    'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/special.png',
+                    (error, image) => {
+                        if (error) throw error;
+                        
+                        // Add the image to the map style.
+                        map.addImage('special', image);
+
+                        map.addSource('spLibraries', {
+                            type: 'geojson',
+                            data: specialLibrary
+                        });
+                        
+                        map.addLayer({
+                            'id': 'Special',
+                            'type': 'symbol',
+                            'source': 'spLibraries',
+                            'layout': {
+                                // Make layer visible by default
+                                'visibility': 'none'
+                            },
+                            'layout': {
+                                'icon-image': 'special',
+                                'icon-size': 0.04
+                            }
+                        });
+                    }
+                );
+
+            
+            });
+
+            map.on('idle', () => {
+                // If these two layers were not added to the map, abort
+                if (!map.getLayer('All') || !map.getLayer('Academic') || !map.getLayer('Government') || !map.getLayer('Public') || !map.getLayer('Special')) {
+                    return;
+                }
+                // Enumerate ids of the layers.
+                const toggleableLayerIds = ['All', 'Academic', 'Government', 'Public', 'Special'];
+                
+                for (const id of toggleableLayerIds) {
+                    if (document.getElementById(id)) {
+                        continue;
+                    }
+
+                    // Create link
+                    const link = document.createElement('a');
+                    link.id = id;
+                    link.href = '#';
+                    link.textContent = id;
+                    link.className = 'active';
+
+                    // Show or hide layer when toggle is clicked
+                    link.onclick = function (e) {
+                        const clickedLayer = this.textContent;
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const visibility = map.getLayoutProperty(
+                            clickedLayer,
+                            'visibility'
+                        );
+
+                        // Toggle layer visibility by changing the layout object's visibility property
+                        if (visibility === 'visible') {
+                            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                            this.className = '';
+                        } else {
+                            this.className = 'active';
+                            map.setLayoutProperty(
+                                clickedLayer,
+                                'visibility',
+                                'visible'
+                            );
+                        }
+                    }
+
+                    const layers = document.getElementById('menu');
+                    layers.appendChild(link);
+                }
+            })
+        }
+
         geojsonFetch();
     </script>
+
 </body>
+
 </html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en-US">
+ <head>
+    <meta charset="utf-8">
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css' rel='stylesheet'/>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Geocoder plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+    type="text/css"
+    />
+    <!-- Turf.js plugin -->
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+</head>
+<body>
+    <div class='sidebar'>
+        <div class='heading'>
+          <h1>Libraries in Washington State</h1>
+        </div>
+        <div id='listings' class='listings'></div>
+      </div>
+      <div id="map" class="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA';
+
+        const map = new mapboxgl.Map({
+            container: 'map', // container ID
+            style: 'mapbox://styles/minjkim2/clbfozzi6000114nqy8k69kjc', // style URL
+            zoom: 6.5, // starting zoom
+            center: [-122.3, 47.65] // starting center
+        });
+        
+
+        function buildLocationList(libraries) {
+            for (const library of libraries.features) {
+                /* Add a new listing section to the sidebar. */
+                const listings = document.getElementById('listings');
+                const listing = listings.appendChild(document.createElement('div'));
+                /* Assign a unique `id` to the listing. */
+                listing.id = `listing-${library.properties.id}`;
+                /* Assign the `item` class to each listing for styling. */
+                listing.className = 'item';
+
+                /* Add the link to the individual listing created above. */
+                const link = listing.appendChild(document.createElement('a'));
+                link.href = '#';
+                link.className = 'title';
+                link.id = `link-${library.properties.id}`;
+                link.innerHTML = `${library.properties.Library}`;
+
+                /* Add details to the individual listing. */
+                const details = listing.appendChild(document.createElement('div'));
+                details.innerHTML = `${library.properties.LDLI_City}`;
+                if (library.properties.LDLI_Address1) {
+                    details.innerHTML += ` · ${library.properties.LDLI_Address1}`;
+                }
+                // if (library.properties.LDLI_URL) {
+                //     details.innerHTML += ` · ${library.properties.LDLI_URL}`;
+                // }
+                // if (library.properties.LDTC_TypeDescription) {
+                //     details.innerHTML += ` · ${library.properties.LDTC_TypeDescription}`;
+                // }
+
+                if (library.properties.distance) {
+                    const roundedDistance = Math.round(library.properties.distance * 100) / 100;
+                    details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
+                    }
+        
+                link.addEventListener('click', function () {
+                for (const feature of libraries.features) {
+                    if (this.id === `link-${feature.properties.id}`) {
+                        flyToStore(feature);
+                        createPopUp(feature);
+                    }
+                }
+                const activeItem = document.getElementsByClassName('active');
+                if (activeItem[0]) {
+                    activeItem[0].classList.remove('active');
+                }
+                    this.parentNode.classList.add('active');
+                });
+            }
+        }
+
+        function flyToStore(currentFeature) {
+            map.flyTo({
+                center: currentFeature.geometry.coordinates,
+                zoom: 15
+            });
+        }
+
+        function createPopUp(currentFeature) {
+            const popUps = document.getElementsByClassName('mapboxgl-popup');
+            /** Check if there is already a popup on the map and if so, remove it */
+            if (popUps[0]) popUps[0].remove();
+
+            const popup = new mapboxgl.Popup({closeOnClick: false})
+                .setLngLat(currentFeature.geometry.coordinates)
+                .setHTML(`<h3>${currentFeature.properties.Library}</h3><h4>Other Info</h4>`)
+                .addTo(map);
+        }
+
+        async function geojsonFetch() { 
+            // other operations
+            let response = await fetch('assets/Washington_Library_Locations.geojson');
+            let libraries = await response.json();
+
+            /* Assign a unique ID to each store */
+            libraries.features.forEach(function (library, i) {
+                library.properties.id = i;
+            });
+
+            map.on('load', function loadingData() {
+
+                map.addSource('libraries', {
+                    type: 'geojson',
+                    data: libraries
+                });
+                addMarkers();
+
+                // map.addLayer({
+                //     'id': 'library-layer',
+                //     'type': 'circle',
+                //     'source': 'libraries',
+                //     'paint': {
+                //         'circle-radius': 8,
+                //         'circle-stroke-width': 2,
+                //         'circle-color': 'red',
+                //         'circle-stroke-color': 'white'
+                //     }
+                // });
+                const geocoder = new MapboxGeocoder({
+                accessToken: 'pk.eyJ1IjoibWluamtpbTIiLCJhIjoiY2xhZzQxMWEzMDJhaDNwbjFicjFvbWd3eCJ9.ugE-s0FiTprh96VnYdM7bA',
+                mapboxgl: mapboxgl,
+                marker: true,
+                bbox: [-126.40427330620177,45.79458986222507, -117.03375066747917,49.00697636022251]
+                });
+                map.addControl(geocoder, 'top-left');
+
+
+                geocoder.on('result', (event) => {
+                const searchResult = event.result.geometry;
+                const options = { units: 'miles' };
+                for (const library of libraries.features) {
+                    library.properties.distance = turf.distance(
+                    searchResult,
+                    library.geometry,
+                    options
+                );
+                }
+                libraries.features.sort((a, b) => {
+                    if (a.properties.distance > b.properties.distance) {
+                        return 1;
+                    }
+                    if (a.properties.distance < b.properties.distance) {
+                        return -1;
+                    }
+                    return 0; // a must be equal to b
+                    });
+                    const listings = document.getElementById('listings');
+                    while (listings.firstChild) {
+                        listings.removeChild(listings.firstChild);
+                    }
+                    buildLocationList(libraries);  
+
+                    const activeListing = document.getElementById(
+                    `listing-${libraries.features[0].properties.id}`
+                    );
+                    activeListing.classList.add('active');
+
+                const bbox = getBbox(libraries, 0, searchResult);
+                map.fitBounds(bbox, {
+                padding: 100
+                });
+
+                createPopUp(libraries.features[0]);
+                });
+            });
+            // map.on('click', (event) => {
+            //     /* Determine if a feature in the "locations" layer exists at that point. */
+            //     const features = map.queryRenderedFeatures(event.point, {
+            //         layers: ['locations']
+            //     });
+
+            //     /* If it does not exist, return */
+            //     if (!features.length) return;
+
+            //     const clickedPoint = features[0];
+
+            //     /* Fly to the point */
+            //     flyToStore(clickedPoint);
+
+            //     /* Close all other popups and display popup for clicked store */
+            //     createPopUp(clickedPoint);
+
+            //     /* Highlight listing in sidebar (and remove highlight for all other listings) */
+            //     const activeItem = document.getElementsByClassName('active');
+            //     if (activeItem[0]) {
+            //         activeItem[0].classList.remove('active');
+            //     }
+            //     const listing = document.getElementById(
+            //         `listing-${clickedPoint.properties.id}`
+            //     );
+            //     listing.classList.add('active');
+            // });
+            buildLocationList(libraries);
+
+
+            function getBbox(sortedlibraries, libraryIdentifier, searchResult) {
+                const lats = [
+                sortedlibraries.features[libraryIdentifier].geometry.coordinates[1],
+                 searchResult.coordinates[1]
+                ];
+                const lons = [
+                    sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],
+                    searchResult.coordinates[0]
+                ];
+                const sortedLons = lons.sort((a, b) => {
+                    if (a > b) {
+                    return 1;
+                    }
+                    if (a.distance < b.distance) {
+                    return -1;
+                    }
+                    return 0;
+                });
+                const sortedLats = lats.sort((a, b) => {
+                    if (a > b) {
+                    return 1;
+                    }
+                    if (a.distance < b.distance) {
+                    return -1;
+                    }
+                    return 0;
+                });
+                return [
+                    [sortedLons[0], sortedLats[0]],
+                    [sortedLons[1], sortedLats[1]]
+                ];
+                }
+
+
+            function addMarkers() {
+                /* For each feature in the GeoJSON object above: */
+                for (const marker of libraries.features) {
+                    /* Create a div element for the marker. */
+                    const el = document.createElement('div');
+                    /* Assign a unique `id` to the marker. */
+                    el.id = `marker-${marker.properties.id}`;
+                    /* Assign the `marker` class to each marker for styling. */
+                    el.className = 'markerS';
+                    if (marker.properties.LDTC_TypeDescription === 'Academic Libraries') {
+                        el.className = 'markerA';
+                    }
+                    if (marker.properties.LDTC_TypeDescription === 'Government Libraries') {
+                        el.className = 'markerG';
+                    }
+                    if (marker.properties.LDTC_TypeDescription === 'Public Libraries') {
+                        el.className = 'markerP';
+                    }
+
+
+                    /**
+                     * Create a marker using the div element
+                     * defined above and add it to the map.
+                     **/
+                    new mapboxgl.Marker(el, {offset: [0, -23]})
+                        .setLngLat(marker.geometry.coordinates)
+                        .addTo(map);
+                    
+                    el.addEventListener('click', (e) => {
+                        /* Fly to the point */
+                        flyToStore(marker);
+                        /* Close all other popups and display popup for clicked store */
+                        createPopUp(marker);
+                        /* Highlight listing in sidebar */
+                        const activeItem = document.getElementsByClassName('active');
+                        e.stopPropagation();
+                        if (activeItem[0]) {
+                            activeItem[0].classList.remove('active');
+                        }
+                        const listing = document.getElementById(`listing-${marker.properties.id}`);
+                        listing.classList.add('active');
+                    });
+                }
+            }
+        };
+        geojsonFetch();
+    </script>
+</body>
+</html>
