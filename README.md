@@ -14,12 +14,13 @@ https://soriabjo.github.io/geog495_libraryfinder/index.html
 We have settled on using data provided by Washington Geoservices and accessed through the [Washington Geospatial Open Data Portal](https://geo.wa.gov/datasets/f62ef46873bd4a80a31e3e88eafa43eb_0/explore?location=47.311825%2C-120.841168%2C7.40). This dataset provides coordinates for each library, as well as identifying information and key descriptors.
 
 ## Applied Libraries: 
-The applied libraries that we used for the purposes of this project are 
- 
+The applied libraries that we used for the purposes of this project are Mapbox GL’s Javascript and CSS libraries. We also used the Mapbox Geocoder plugin and Turf.js, which allowed us to be able to calculate the distance between the user and the various libraries. To host our application on a website, we use GitHub Pages.
+
 ## Acknowledgments: 
-We would like to give thanks to our professor, Dr. Bo Zhao, and our teaching assistant, Steven Bao, for teaching us the necessary tools throughout the quarter in order for us to complete this project successfully.
+We would like to give thanks to our professor, Dr. Bo Zhao, and our teaching assistant, Steven Bao, for teaching us the necessary tools and concepts throughout the quarter in order for us to complete this project successfully.
 
 ## Other Info: 
+In order to complete this project, we followed a various tutorials from Mapbox, [Build a store locator using Mapbox GL JS](https://docs.mapbox.com/help/tutorials/building-a-store-locator/) and [Sort stores by distance](https://docs.mapbox.com/help/tutorials/geocode-and-sort-stores/). 
  
 ### Icons
 The icons used for our markers in our project are all from flaticon.com.
