@@ -23,13 +23,21 @@ We would like to give thanks to our professor, Dr. Bo Zhao, and our teaching ass
  
 ### Icons
 The icons used for our markers in our project are all from flaticon.com.
+
 ![Graduation cap or mortarboard](/img/academic.png)
+
 This [Graduation cap icons created by Iconiyo - Flaticon](https://www.flaticon.com/free-icons/graduation-cap) is used to signify academic libraries in the project.
+
 ![Government building](/img/government.png) 
+
 This [Government icons created by Vector Stall - Flaticon](https://www.flaticon.com/free-icons/government) is used to signify government libraries in the project.
+
 ![person](/img/public.png)
+
 This [User icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/user) is used to signify public libraries in the project.
+
 ![lightbulb](/img/special.png)
+
 This [Bulb icons created by Creative Stall Premium - Flaticon](https://www.flaticon.com/free-icons/bulb) is used to signify special libraries in the project.
 
 
