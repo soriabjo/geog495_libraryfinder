@@ -73,7 +73,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 
 .listings .item .title {
     display: block;
-    color: #00853e;
+    color: #0047AB;
     font-weight: 700;
 }
 
@@ -83,7 +83,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 
 .listings .item.active .title,
 .listings .item .title:hover {
-    color: #8cc63f;
+    color: #6495ED;
 }
 
 .listings .item.active {
@@ -102,7 +102,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #00853e;
+    background: #0047AB;
     border-radius: 0;
 }
 
@@ -118,7 +118,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 }
 
 .mapboxgl-popup-content h3 {
-    background: #91c949;
+    background: #6495ED;
     color: #fff;
     margin: 0;
     padding: 10px;
@@ -142,7 +142,7 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
 }
 
 .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
-    border-bottom-color: #91c949;
+    border-bottom-color: #6495ED;
 }
 
 .markerA {
@@ -181,16 +181,16 @@ gets 2/3 of the page. You can adjust this to your personal liking. */
     padding-bottom: 50px;
   }
 
-  .mapboxgl-ctrl-geocoder {
+.mapboxgl-ctrl-geocoder {
     border: 0;
     border-radius: 0;
     position: relative;
     top: 0;
     width: 800px;
     margin-top: 0;
-  }
+}
   
-  .mapboxgl-ctrl-geocoder > div {
+.mapboxgl-ctrl-geocoder > div {
     min-width: 100%;
     margin-left: 0;
-  }
+}
