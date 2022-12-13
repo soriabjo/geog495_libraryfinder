@@ -19,6 +19,10 @@ https://soriabjo.github.io/geog495_libraryfinder/index.html
 4. When you click on an individual library marker, this is what the information panel pop-up looks like and the information that is shown, if there is data for it
 <img src="/img/information.JPG" alt="library information pop-up" width=800>
 
+## Main Functions:
+The main function of our application is the sort by distance function of the web page. We designed the web page with a map on the right hand side showing the many different libraries in the state of washington. On the left hand side there is a panel that displays a list of all these libraries. The sort by distance function is implemented by the search bar that is located in the top left corner of the map. The user is able to enter the address of their current location in the search bar. The list of libraries on the left hand side will then reorder with the top library on the list being the one that is closest to the user's current location. 
+
+
 ## Data Sources:
 We have settled on using data provided by Washington Geoservices and accessed through the [Washington Geospatial Open Data Portal](https://geo.wa.gov/datasets/f62ef46873bd4a80a31e3e88eafa43eb_0/explore?location=47.311825%2C-120.841168%2C7.40). This dataset provides coordinates for each library, as well as identifying information and key descriptors.
 
