@@ -465,13 +465,14 @@
                         if (library.properties.LDLI_Address1) {
                             details.innerHTML += ` | ${library.properties.LDLI_Address1}`;
                         }
+                        if (library.properties.LDLI_AddPhones) {
+                            details.innerHTML += ` | ${library.properties.LDLI_AddPhones}`;
+                        }
                         if(library.properties.distance) {
                             const roundedDistance = Math.round(library.properties.distance * 100) / 100;
                             details.innerHTML += `<div><strong>${roundedDistance} miles away</strong></div>`;
                         }
-                        if (library.properties.LDLI_AddPhones) {
-                            details.innerHTML += ` | ${library.properties.LDLI_AddPhones}`;
-                        }
+
 
                         link.addEventListener('click', function () {
                             for (const feature of libraryData.features) {
