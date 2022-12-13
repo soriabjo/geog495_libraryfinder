@@ -16,7 +16,7 @@
     * {
         box-sizing: border-box;
     }
-  
+
     body {
         color: #404040;
         font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', sans-serif;
@@ -127,7 +127,7 @@
     #menu a.active {
         background-color: #3887be;
         color: #ffffff;
-    } 
+    }
 
     #menu a.active:hover {
         background: #3074a4;
@@ -258,7 +258,7 @@
     .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
     border-bottom-color: #91c949;
     }
-    
+
     .markerA {
     border-color: black;
     cursor: pointer;
@@ -388,7 +388,8 @@
                         );
                     }
                     libraryData.features.sort((a,b) => {
-                        if (a.properties.distance > b,properties.distance) {
+                        console.log(a.properties.distance)
+                        if (a.properties.distance > b.properties.distance) {
                             return 1;
                         }
                         if (a.properties.distance < b.properties.distance) {
@@ -417,7 +418,7 @@
                 function getBbox(sortedLibraries, libraryIdentifier, searchResult) {
                     const lats = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[1], searchResult.coordinates[1]];
                     const lons = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],searchResult.coordinates[0]];
-                    
+
                     const sortedLons = lons.sort((a,b) => {
                         if (a > b) {
                             return 1;
@@ -445,15 +446,15 @@
 
                 function buildLocationList(libraryData) {
                     for (const library of libraryData.features) {
-                        /* Add new listing section to sidebar. */ 
+                        /* Add new listing section to sidebar. */
                         const listings = document.getElementById('listings');
                         const listing = listings.appendChild(document.createElement('div'));
-                        /* Assign unique `id` to listing */ 
+                        /* Assign unique `id` to listing */
                         listing.id = `listing-${library.properties.id}`;
                         /* Assign `item` class to each listing for styling */
                         listing.className = 'item';
 
-                        /*Add link to indiv. listing created above */ 
+                        /*Add link to indiv. listing created above */
                         const link = listing.appendChild(document.createElement('a'));
                             link.href = '#';
                             link.className = 'title';
@@ -498,7 +499,7 @@
 
                 function createPopUp(currentFeature) {
                     const popUps = document.getElementsByClassName('mapboxgl-popup');
-                    /* check if already a popup on map. remove if so */ 
+                    /* check if already a popup on map. remove if so */
                     if (popUps[0]) popUps[0].remove();
 
                     const popup = new mapboxgl.Popup({closeOnClick: false})
@@ -533,11 +534,10 @@
                          * Create a marker using the div element
                          * defined above and add it to the map.
                          **/
-                        console.log('Pos coordinates: ' + marker.geometry.coordinates);
                         new mapboxgl.Marker(el, {offset: [0, -23]})
                             .setLngLat(marker.geometry.coordinates)
                             .addTo(map);
-                        
+
                         el.addEventListener('click', (e) => {
                             /* Fly to the point */
                             flyToLibrary(marker);
@@ -559,10 +559,10 @@
                     'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/academic.png',
                     (error, image) => {
                         if (error) throw error;
-                        
+
                         // Add the image to the map style.
                         map.addImage('academic', image);
-                        
+
                         // Add a data source containing one point feature.
                         map.addSource('academicLibraries', {
                         'type': 'geojson',
@@ -590,15 +590,15 @@
                     'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/government.png',
                     (error, image) => {
                         if (error) throw error;
-                        
+
                         // Add the image to the map style.
                         map.addImage('government', image);
-                    
+
                         map.addSource('govLibraries', {
                             type: 'geojson',
                             data: governmentLibrary
                         });
-                        
+
                         map.addLayer({
                             'id': 'Government',
                             'type': 'symbol',
@@ -614,12 +614,12 @@
                         });
                     }
                 );
-                
+
                 map.loadImage(
                     'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/public.png',
                     (error, image) => {
                         if (error) throw error;
-                        
+
                         // Add the image to the map style.
                         map.addImage('public', image);
 
@@ -627,7 +627,7 @@
                             type: 'geojson',
                             data: publicLibrary
                         });
-                        
+
                         map.addLayer({
                             'id': 'Public',
                             'type': 'symbol',
@@ -648,7 +648,7 @@
                     'https://raw.githubusercontent.com/soriabjo/geog495_libraryfinder/main/img/special.png',
                     (error, image) => {
                         if (error) throw error;
-                        
+
                         // Add the image to the map style.
                         map.addImage('special', image);
 
@@ -656,7 +656,7 @@
                             type: 'geojson',
                             data: specialLibrary
                         });
-                        
+
                         map.addLayer({
                             'id': 'Special',
                             'type': 'symbol',
@@ -673,7 +673,7 @@
                     }
                 );
 
-            
+
             });
 
             map.on('idle', () => {
@@ -683,7 +683,7 @@
                 }
                 // Enumerate ids of the layers.
                 const toggleableLayerIds = ['All', 'Academic', 'Government', 'Public', 'Special'];
-                
+
                 for (const id of toggleableLayerIds) {
                     if (document.getElementById(id)) {
                         continue;
