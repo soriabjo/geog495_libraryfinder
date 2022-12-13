@@ -388,7 +388,6 @@
                         );
                     }
                     libraryData.features.sort((a,b) => {
-                        console.log(a.properties.distance)
                         if (a.properties.distance > b.properties.distance) {
                             return 1;
                         }
@@ -416,8 +415,8 @@
                 buildLocationList(libraryData);
 
                 function getBbox(sortedLibraries, libraryIdentifier, searchResult) {
-                    const lats = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[1], searchResult.coordinates[1]];
-                    const lons = [sortedlibraries.features[libraryIdentifier].geometry.coordinates[0],searchResult.coordinates[0]];
+                    const lats = [sortedLibraries.features[libraryIdentifier].geometry.coordinates[1], searchResult.coordinates[1]];
+                    const lons = [sortedLibraries.features[libraryIdentifier].geometry.coordinates[0],searchResult.coordinates[0]];
 
                     const sortedLons = lons.sort((a,b) => {
                         if (a > b) {
