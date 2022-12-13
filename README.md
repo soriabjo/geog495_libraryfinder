@@ -4,19 +4,19 @@
 For our final project in Geography 495: Web GIS, we have built an application that sorts data by distance to allow our users to identify nearby libraries to their location at the University of Washington and filter out relevant libraries based on category. We have also included a web map that includes the locations of all the libraries within the state of Washington. The base map that we created for our application has a light blue-gray monochrome theme that highlights the streets in black. We then included all the libraries in Washington in point format as a layer on top of the base map. Each library has an icon that distinguishes the main purpose of each library, categorized as academic, government, public, and special libraries. If you hover over each library, then it will display a popup of the library containing information such as its phone contact number, their website, long/lat location, city, county, and any other relevant information that helps our intended audience better choose the library for their needs. There is a search bar in the upper left hand corner of the map that allows users to type in their address and discover the library that is closest to them. Once a user types in and selects their address the map will zoom to their address and show the highlighted library that is closest to them with the information on that library.  
 
 ## Project Goals 
-Libraries are very resourceful locations for students whether it is used as a tool for the research process, entertainment use (finding the next good book or renting a movie), or just as a quiet study space. However, we feel that libraries are often overlooked for research purposes these days due to the accessibility of resources online. By creating a convenient tool that helps users find nearby libraries in Washington state that correspond with their needs, we hope that they will be able to take full advantage of these wonderful resources! 
+Libraries are very resourceful locations for students whether it is used as a tool for the research process, entertainment use (finding the next good book or renting a movie), or just as a quiet study space. However, we feel that libraries are often overlooked for research purposes these days due to the accessibility of resources online. By creating a convenient tool that helps users find nearby libraries in Washington state that correspond with their needs, we hope that they will be able to take full advantage of these wonderful resources, including the very helpful and knowledgeable librarians that work there! 
 
 ## Application Url: 
 https://soriabjo.github.io/geog495_libraryfinder/index.html
 
 ## Screen Shots: 
-1. What the application looks like at the start
+1. This is what the application looks like when the user first loads it
 <img src="/img/start.JPG" alt="start of application" width=800>
-2. What the map looks like when you filter out a category
+2. When you press on one of the buttons on the right side of the map, you can filter out that category shown on the map
 <img src="/img/filter.JPG" alt="filter out category" width=800>
-3. How the map looks like when you search your location
+3. When you search a location, the maps moves and zooms on to that location
 <img src="/img/location.JPG" alt="zoom into searched location" width=800>
-4. What the information pop-up panel looks like when you click on a library marker
+4. When you click on an individual library marker, this is what the information panel pop-up looks like and the information that is shown, if there is data for it
 <img src="/img/information.JPG" alt="library information pop-up" width=800>
 
 ## Data Sources:
